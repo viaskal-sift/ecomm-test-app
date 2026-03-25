@@ -4,7 +4,7 @@ from business.auth import authenticate_user
 
 
 def render_login() -> None:
-    st.title("Acme Storefront")
+    st.title("Welcome to Amazon Replacement")
     st.subheader("Sign in")
 
     with st.form("login_form"):

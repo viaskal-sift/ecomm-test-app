@@ -34,10 +34,6 @@ def render_place_order() -> None:
         postal_code = st.text_input("Postal code", value="03257")
         country = st.text_input("Country", value="US")
 
-        st.divider()
-        st.write("Order notes (optional)")
-        order_notes = st.text_area("Notes")
-
         submit = st.form_submit_button("Continue to checkout")
 
     if submit:
@@ -70,7 +66,7 @@ def render_place_order() -> None:
                 "postal_code": postal_code.strip(),
                 "country": country.strip(),
             },
-            "notes": order_notes.strip(),
+            "notes": "",
             "pricing": {
                 "subtotal": subtotal,
                 "tax_rate": totals["tax_rate"],
