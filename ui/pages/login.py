@@ -1,6 +1,8 @@
 import streamlit as st
 
+from business.action_logger import log_action
 from business.auth import authenticate_user
+from ui.nav import go_to
 
 
 def render_login() -> None:
@@ -21,5 +23,5 @@ def render_login() -> None:
             return
         st.session_state.logged_in = True
         st.session_state.username = username.strip()
-        st.session_state.page = "shop"
-        st.rerun()
+        log_action("login", username.strip())
+        go_to("shop")

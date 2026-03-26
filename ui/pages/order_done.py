@@ -1,6 +1,7 @@
 import streamlit as st
 
 from business.auth import logout, require_login
+from ui.nav import go_to
 from ui.sidebar import render_cart_sidebar
 from ui.utils import format_money
 
@@ -20,10 +21,8 @@ def render_order_done() -> None:
     st.write(f"Payment method: {order.get('payment_method')}")
 
     if st.button("Back to shop"):
-        st.session_state.page = "shop"
-        st.rerun()
+        go_to("shop")
 
     if st.button("Start fresh"):
         st.session_state.active_order = None
         logout()
-        st.rerun()

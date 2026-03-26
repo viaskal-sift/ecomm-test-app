@@ -1,6 +1,7 @@
 import streamlit as st
 
 from business.cart import cart_item_count, cart_subtotal, clear_cart, update_cart_qty
+from ui.nav import go_to
 from ui.utils import format_money
 
 
@@ -46,10 +47,8 @@ def render_cart_sidebar() -> None:
         disabled=not st.session_state.cart,
         help="Start checkout and enter shipping details.",
     ):
-        st.session_state.page = "place_order"
-        st.rerun()
+        go_to("cart")
 
     if st.session_state.logged_in and st.sidebar.button("Logout"):
         from business.auth import logout
         logout()
-        st.rerun()

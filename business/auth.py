@@ -1,5 +1,6 @@
 import streamlit as st
 
+from business.action_logger import log_action
 from business.cart import clear_cart
 from db.database import get_db, hash_password
 
@@ -15,12 +16,15 @@ def authenticate_user(username: str, password: str) -> bool:
 
 def require_login() -> None:
     if not st.session_state.logged_in:
-        st.session_state.page = "login"
+        from ui.nav import go_to
+        go_to("login")
 
 
 def logout() -> None:
+    log_action("logout", st.session_state.username)
     st.session_state.logged_in = False
     st.session_state.username = None
-    st.session_state.page = "login"
     st.session_state.active_order = None
     clear_cart()
+    from ui.nav import go_to
+    go_to("login")

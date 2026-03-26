@@ -2,9 +2,11 @@ import uuid
 
 import streamlit as st
 
+from business.action_logger import log_action
 from business.auth import require_login
 from business.cart import cart_subtotal
 from business.order import compute_order_totals
+from ui.nav import go_to
 from ui.sidebar import render_cart_sidebar
 
 
@@ -16,8 +18,7 @@ def render_place_order() -> None:
     if not st.session_state.cart:
         st.warning("Your cart is empty.")
         if st.button("Back to shop"):
-            st.session_state.page = "shop"
-            st.rerun()
+            go_to("shop")
         return
 
     subtotal = cart_subtotal()
@@ -75,8 +76,10 @@ def render_place_order() -> None:
                 "total": totals["total"],
             },
         }
-        st.session_state.page = "checkout"
-        st.rerun()
+        log_action("create_order", st.session_state.username, {
+            "order_id": order_id, "total": totals["total"],
+        })
+        go_to("checkout")
 
     st.info(
         "This is a demo order form. No payment processing occurs; checkout just confirms your order."

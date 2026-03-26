@@ -22,8 +22,9 @@ def get_db() -> sqlite3.Connection:
 def _create_schema(conn: sqlite3.Connection) -> None:
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS users (
-            username        TEXT PRIMARY KEY,
-            password_hash   TEXT NOT NULL
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            username      TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL
         );
 
         CREATE TABLE IF NOT EXISTS products (
@@ -63,6 +64,18 @@ def _create_schema(conn: sqlite3.Connection) -> None:
             price      REAL NOT NULL,
             qty        INTEGER NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS user_actions_log (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id    INTEGER REFERENCES users(id),
+            username   TEXT NOT NULL,
+            action     TEXT NOT NULL CHECK(action IN (
+                           'login', 'logout', 'add_to_cart',
+                           'remove_from_cart', 'create_order', 'checkout'
+                       )),
+            details    TEXT,
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
     """)
     conn.commit()
 
@@ -72,7 +85,7 @@ def _seed_data(conn: sqlite3.Connection) -> None:
         ("john", hash_password("123")),
     ]
     conn.executemany(
-        "INSERT OR IGNORE INTO users (username, password_hash) VALUES (?, ?)",
+        "INSERT OR IGNORE INTO users (username, password_hash) VALUES (?, ?)",  # id is AUTOINCREMENT
         users,
     )
 

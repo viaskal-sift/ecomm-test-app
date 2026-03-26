@@ -2,9 +2,11 @@ import streamlit as st
 
 import re
 
+from business.action_logger import log_action
 from business.auth import require_login
 from business.cart import clear_cart
 from business.order import save_order
+from ui.nav import go_to
 from ui.sidebar import render_cart_sidebar
 from ui.utils import format_money
 
@@ -28,8 +30,7 @@ def render_checkout() -> None:
     if not order:
         st.warning("No active order. Place an order first.")
         if st.button("Back to shop"):
-            st.session_state.page = "shop"
-            st.rerun()
+            go_to("shop")
         return
 
     pricing = order["pricing"]
@@ -83,7 +84,11 @@ def render_checkout() -> None:
         st.session_state.active_order["payment_method"] = "Credit card"
         st.session_state.active_order["status"] = "confirmed"
         save_order(st.session_state.active_order)
+        log_action("checkout", st.session_state.username, {
+            "order_id": st.session_state.active_order["order_id"],
+            "total": st.session_state.active_order["pricing"]["total"],
+            "payment_method": "Credit card",
+        })
 
         clear_cart()
-        st.session_state.page = "order_done"
-        st.rerun()
+        go_to("order_done")
